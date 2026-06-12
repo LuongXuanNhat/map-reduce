@@ -1,0 +1,42 @@
+version: '3'
+services:
+  master:
+    build: .
+    hostname: master
+    container_name: master
+    ports:
+      - "9870:9870" # Cổng giao diện Web của HDFS
+      - "8088:8088" # Cổng giao diện Web của YARN
+    networks:
+      - bigdata-net
+    volumes:
+      # Gắn file cấu hình Hadoop từ bên ngoài vào
+      - ./hadoop_configs:/usr/local/hadoop/etc/hadoop
+      # Đảm bảo dữ liệu HDFS không bị mất khi Docker tắt
+      - hdfs_master_data:/home/hduser/hdfs_data
+      # Gắn thư mục để làm Yêu cầu 2 của bài tập
+      - ./data:/home/hduser/data
+      - ./realtime-data:/home/hduser/realtime-data
+
+  slave1:
+    build: .
+    hostname: slave1
+    container_name: slave1
+    networks:
+      - bigdata-net
+
+  slave2:
+    build: .
+    hostname: slave2
+    container_name: slave2
+    networks:
+      - bigdata-net
+
+networks:
+  bigdata-net:
+    driver: bridge
+
+volumes:
+  hdfs_master_data:
+  hdfs_slave1_data:
+  hdfs_slave2_data:
